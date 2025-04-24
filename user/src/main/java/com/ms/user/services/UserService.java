@@ -7,6 +7,9 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.UUID;
+
 @Service
 public class UserService {
 
@@ -23,5 +26,25 @@ public class UserService {
         return userModel;
     }
 
+    @Transactional
+    public List<UserModel> findAll(){
+        return userRepository.findAll();
+    }
 
+    @Transactional
+    public void delete(UserModel user){
+        userRepository.delete(user);
+    }
+
+    @Transactional
+    public UserModel update(UserModel user){
+        UUID id = user.getUserId();
+        UserModel currentUser = userRepository.findById(id).orElse(null);
+        if(user != null){
+            currentUser.setEmail(user.getEmail());
+            currentUser.setName(user.getName());
+            return userRepository.save(currentUser);
+        }
+        return null;
+    }
 }
