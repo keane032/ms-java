@@ -1,5 +1,7 @@
 package com.ms.user.services;
 
+import com.ms.user.exceptions.UsuarioNaoEncontradoException;
+import com.ms.user.models.Telefone;
 import com.ms.user.models.UserModel;
 import com.ms.user.producers.UserProducer;
 import com.ms.user.repositories.UserRepository;
@@ -22,7 +24,8 @@ public class UserService {
     @Transactional
     public UserModel save(UserModel user){
         UserModel userModel = userRepository.save(user);
-        userProducer.publishMessageEmail(userModel);
+        //comentar para teste
+//        userProducer.publishMessageEmail(userModel);
         return userModel;
     }
 
@@ -38,13 +41,33 @@ public class UserService {
 
     @Transactional
     public UserModel update(UserModel user){
-        UUID id = user.getUserId();
-        UserModel currentUser = userRepository.findById(id).orElse(null);
-        if(user != null){
-            currentUser.setEmail(user.getEmail());
-            currentUser.setName(user.getName());
-            return userRepository.save(currentUser);
+        try{
+            UUID id = user.getUserId();
+
+            UserModel currentUser = userRepository.findById(id).orElse(null);
+//            if(user != null){
+                currentUser.setEmail(user.getEmail());
+                currentUser.setName(user.getName());
+                return userRepository.save(currentUser);
+//            }
+        }catch (Exception e){
+            throw new UsuarioNaoEncontradoException();
         }
-        return null;
+
+    }
+
+    @Transactional
+    public UserModel adicionarTelefone(UUID id, Telefone telefone){
+        try{
+
+            UserModel currentUser = userRepository.findById(id).orElse(null);
+//            if(user != null){
+            currentUser.adicinarTelefone(telefone);
+            return userRepository.save(currentUser);
+//            }
+        }catch (Exception e){
+            throw new UsuarioNaoEncontradoException();
+        }
+
     }
 }
