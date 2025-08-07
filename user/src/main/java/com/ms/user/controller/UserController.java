@@ -52,6 +52,8 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.update(userModel));
     }
 
+    // OBS: eu sei que nao e seguro botar ID do usuario na url so
+    // estou colocando para servir de exemplo no futuro.
     @PostMapping("/{id}/telefone")
     public ResponseEntity<UserModel> find(
             @PathVariable UUID id,
